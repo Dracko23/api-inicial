@@ -10,7 +10,7 @@ public class Producto
     [StringLength(100, MinimumLength = 1)]
     public string Nombre { get; set; } = string.Empty;
 
-    [Range(typeof(decimal), "0", "99999999.99", ParseLimitsInInvariantCulture = true, ConvertValueInInvariantCulture = true)]
+    [Range(0, 99999999.99)]
     public decimal Precio { get; set; }
 
     [Range(0, int.MaxValue)]
