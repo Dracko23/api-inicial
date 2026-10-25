@@ -1,0 +1,79 @@
+@ApiInicial_HostAddress = http://localhost:5025
+
+GET {{ApiInicial_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+### Crear categoria
+POST {{ApiInicial_HostAddress}}/api/categorias
+Content-Type: application/json
+
+{
+  "nombre": "Perifericos",
+  "descripcion": "Accesorios para equipos"
+}
+
+### Listar categorias
+GET {{ApiInicial_HostAddress}}/api/categorias
+Accept: application/json
+
+### Obtener categoria por ID
+GET {{ApiInicial_HostAddress}}/api/categorias/1
+Accept: application/json
+
+### Crear producto
+POST {{ApiInicial_HostAddress}}/api/productos
+Content-Type: application/json
+
+{
+  "nombre": "Teclado mecanico",
+  "precio": 250.50,
+  "stock": 10,
+  "estado": true,
+  "categoriaId": 1
+}
+
+### Listar productos
+GET {{ApiInicial_HostAddress}}/api/productos
+Accept: application/json
+
+### Obtener producto por ID
+GET {{ApiInicial_HostAddress}}/api/productos/1
+Accept: application/json
+
+### Actualizar parcialmente producto
+PATCH {{ApiInicial_HostAddress}}/api/productos/1
+Content-Type: application/json
+
+{
+  "precio": 275.00,
+  "stock": 0
+}
+
+### Cambiar estado a inactivo
+PATCH {{ApiInicial_HostAddress}}/api/productos/1
+Content-Type: application/json
+
+{
+  "estado": false
+}
+
+### Eliminar producto
+DELETE {{ApiInicial_HostAddress}}/api/productos/1
+
+### Consultar producto inexistente
+GET {{ApiInicial_HostAddress}}/api/productos/999999
+Accept: application/json
+
+### Validar producto incorrecto
+POST {{ApiInicial_HostAddress}}/api/productos
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "precio": -1,
+  "stock": -1,
+  "estado": true,
+  "categoriaId": 0
+}
