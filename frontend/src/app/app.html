@@ -1,0 +1,253 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="Nexo, inicio">
+      <span class="brand-mark">N</span>
+      <span class="brand-name">nexo<span>.</span></span>
+    </a>
+
+    <div class="workspace-label">ESPACIO DE TRABAJO</div>
+    <button class="workspace-switcher" type="button">
+      <span class="workspace-avatar">A</span>
+      <span class="workspace-copy">
+        <strong>Almacén central</strong>
+        <small>Plan estándar</small>
+      </span>
+      <span class="chevron">⌄</span>
+    </button>
+
+    <nav class="main-nav" aria-label="Navegación principal">
+      <span class="nav-caption">MENÚ</span>
+      <a class="nav-link active" href="#inventario">
+        <span class="nav-icon">▦</span> Inventario
+        <span class="nav-count">{{ products().length }}</span>
+      </a>
+      <a class="nav-link" href="#categorias">
+        <span class="nav-icon">◇</span> Categorías
+      </a>
+      <a class="nav-link" href="#resumen">
+        <span class="nav-icon">↗</span> Resumen
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="api-status">
+        <span class="status-pulse" [class.status-disconnected]="!connected()"></span>
+        <span><strong>{{ connected() ? 'API conectada' : loading() ? 'Conectando API' : 'Sin conexión' }}</strong><small>{{ connected() ? 'Servicio en línea' : loading() ? 'Verificando servicio' : 'Revisa el backend' }}</small></span>
+      </div>
+      <div class="profile">
+        <span class="profile-avatar">JD</span>
+        <span class="profile-copy"><strong>Juan Díaz</strong><small>Administrador</small></span>
+        <span class="chevron">···</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content" id="inventario">
+    <header class="topbar">
+      <div class="breadcrumbs">Panel <span>/</span> <strong>Inventario</strong></div>
+      <div class="topbar-actions">
+        <span class="today">{{ today | date:'EEEE, d MMMM' }}</span>
+        <button class="icon-button notification-button" type="button" aria-label="Notificaciones">
+          ♧<i></i>
+        </button>
+        <span class="topbar-divider"></span>
+        <span class="profile-avatar top-avatar">JD</span>
+      </div>
+    </header>
+
+    <section class="page-content">
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">GESTIÓN DE ALMACÉN</div>
+          <h1>Tu inventario<span>.</span></h1>
+          <p>Controla tus productos y mantén todo en orden.</p>
+        </div>
+        <div class="heading-actions">
+          <button class="button button-secondary" type="button" (click)="activeDialog.set('category')">
+            <span>＋</span> Nueva categoría
+          </button>
+          <button class="button button-primary" type="button" (click)="openNewProduct()">
+            <span>＋</span> Añadir producto
+          </button>
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="alert" role="alert">
+          <span>{{ error() }}</span>
+          <button type="button" (click)="loadCatalog()">Reintentar</button>
+        </div>
+      }
+
+      <section class="stats-grid" id="resumen" aria-label="Resumen del inventario">
+        <article class="stat-card">
+          <div class="stat-top"><span>Total productos</span><span class="stat-icon violet">▦</span></div>
+          <strong class="stat-value">{{ products().length }}</strong>
+          <span class="stat-note">Referencias registradas</span>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Productos activos</span><span class="stat-icon green">↗</span></div>
+          <strong class="stat-value">{{ activeProducts() }}</strong>
+          <span class="stat-note">Disponibles para venta</span>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Stock bajo</span><span class="stat-icon amber">⌁</span></div>
+          <strong class="stat-value">{{ lowStockProducts() }}</strong>
+          <span class="stat-note">Menos de 5 unidades</span>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>Valor del inventario</span><span class="stat-icon blue">$</span></div>
+          <strong class="stat-value">{{ inventoryValue() | currency:'USD':'symbol':'1.2-2' }}</strong>
+          <span class="stat-note">Precio × unidades en stock</span>
+        </article>
+      </section>
+
+      <section class="inventory-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Productos</h2>
+            <p>Consulta, filtra y administra los artículos de tu almacén.</p>
+          </div>
+          <button class="button button-secondary export-button" type="button" (click)="loadCatalog()">
+            <span>↻</span> Actualizar
+          </button>
+        </div>
+
+        <div class="toolbar">
+          <label class="search-box">
+            <span class="search-icon">⌕</span>
+            <input
+              type="search"
+              placeholder="Buscar por producto o categoría..."
+              [value]="search()"
+              (input)="setSearch($event)"
+              aria-label="Buscar productos"
+            />
+          </label>
+          <label class="select-wrap">
+            <span class="sr-only">Filtrar por categoría</span>
+            <select [value]="categoryFilter()" (change)="setCategoryFilter($event)">
+              <option value="all">Todas las categorías</option>
+              @for (category of categories(); track category.id) {
+                <option [value]="category.id">{{ category.nombre }}</option>
+              }
+            </select>
+          </label>
+          <label class="select-wrap status-select">
+            <span class="sr-only">Filtrar por estado</span>
+            <select [value]="statusFilter()" (change)="setStatusFilter($event)">
+              <option value="all">Cualquier estado</option>
+              <option value="active">Activo</option>
+              <option value="inactive">Inactivo</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="check-column"><input type="checkbox" aria-label="Seleccionar todos" disabled /></th>
+                <th>PRODUCTO</th>
+                <th>CATEGORÍA</th>
+                <th>PRECIO</th>
+                <th>STOCK</th>
+                <th>ESTADO</th>
+                <th><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (loading()) {
+                <tr><td class="empty-state" colspan="7"><span class="loader"></span> Cargando inventario...</td></tr>
+              } @else if (filteredProducts().length === 0) {
+                <tr>
+                  <td class="empty-state" colspan="7">
+                    <span class="empty-icon">▦</span>
+                    <strong>{{ products().length ? 'No encontramos productos' : 'Tu inventario está vacío' }}</strong>
+                    <span>{{ products().length ? 'Prueba con otros filtros.' : 'Añade tu primer producto para empezar.' }}</span>
+                    @if (!products().length) {
+                      <button class="button button-primary" type="button" (click)="openNewProduct()">Añadir producto</button>
+                    }
+                  </td>
+                </tr>
+              } @else {
+                @for (product of filteredProducts(); track product.id) {
+                  <tr>
+                    <td class="check-column"><input type="checkbox" [attr.aria-label]="'Seleccionar ' + product.nombre" disabled /></td>
+                    <td>
+                      <div class="product-cell">
+                        <span class="product-icon" [class]="product.nombre.charCodeAt(0) % 4 === 0 ? 'product-icon lavender' : product.nombre.charCodeAt(0) % 4 === 1 ? 'product-icon peach' : product.nombre.charCodeAt(0) % 4 === 2 ? 'product-icon mint' : 'product-icon sky'">
+                          {{ product.nombre.charAt(0).toUpperCase() }}
+                        </span>
+                        <span class="product-copy"><strong>{{ product.nombre }}</strong><small>SKU-{{ product.id.toString().padStart(4, '0') }}</small></span>
+                      </div>
+                    </td>
+                    <td><span class="category-pill">{{ product.nombreCategoria }}</span></td>
+                    <td class="price-cell">{{ product.precio | currency:'USD':'symbol':'1.2-2' }}</td>
+                    <td>
+                      <span class="stock-cell" [appLowStock]="product.stock">
+                        <strong>{{ product.stock }}</strong> unidades
+                      </span>
+                    </td>
+                    <td>
+                      <span class="status-pill" [class.status-active]="product.estado" [class.status-inactive]="!product.estado">
+                        <span></span>{{ product.estado | stockStatus }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="row-actions">
+                        <button type="button" [attr.aria-label]="'Editar ' + product.nombre" (click)="openEditProduct(product)">✎</button>
+                        <button class="delete-action" type="button" [attr.aria-label]="'Eliminar ' + product.nombre" (click)="deleteProduct(product)">⌫</button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <footer class="table-footer">
+          <span>Mostrando <strong>{{ filteredProducts().length }}</strong> de <strong>{{ products().length }}</strong> productos</span>
+          <span class="page-indicator">Vista completa <span>•</span> Sin paginación</span>
+        </footer>
+      </section>
+
+      <section class="categories-strip" id="categorias">
+        <div class="categories-heading">
+          <div><h2>Tus categorías</h2><p>Organiza tus productos por tipo.</p></div>
+          <button type="button" class="text-button" (click)="activeDialog.set('category')">+ Añadir categoría</button>
+        </div>
+        <div class="category-cards">
+          @for (category of categories(); track category.id) {
+            <button type="button" class="category-card" (click)="categoryFilter.set(category.id.toString())">
+              <span class="category-card-icon">{{ category.nombre.charAt(0).toUpperCase() }}</span>
+              <span><strong>{{ category.nombre }}</strong><small>{{ category.descripcion || 'Sin descripción' }}</small></span>
+              <span class="category-arrow">↗</span>
+            </button>
+          } @empty {
+            <div class="category-empty">Todavía no hay categorías. Crea una para clasificar tus productos.</div>
+          }
+        </div>
+      </section>
+
+      <footer class="page-footer"><span>© 2026 Nexo Inventory</span><span>Hecho para que todo esté en su lugar <span class="footer-heart">♥</span></span></footer>
+    </section>
+  </main>
+</div>
+
+@if (activeDialog() === 'product') {
+  <app-product-form
+    [product]="editingProduct()"
+    [categories]="categories()"
+    (saved)="saveProduct($event)"
+    (cancelled)="closeDialog()"
+  />
+}
+
+@if (activeDialog() === 'category') {
+  <app-category-form
+    (saved)="saveCategory($event)"
+    (cancelled)="closeDialog()"
+  />
+}

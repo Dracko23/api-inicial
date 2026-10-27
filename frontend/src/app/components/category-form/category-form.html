@@ -1,0 +1,29 @@
+<div class="modal-backdrop" (click)="cancelled.emit()">
+  <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="category-dialog-title" (click)="$event.stopPropagation()">
+    <header class="dialog-header">
+      <div><span class="dialog-kicker">ORGANIZACIÓN</span><h2 id="category-dialog-title">Nueva categoría</h2></div>
+      <button type="button" class="close-button" aria-label="Cerrar" (click)="cancelled.emit()">×</button>
+    </header>
+    <p class="dialog-description">Agrupa tus productos para encontrarlos más fácilmente.</p>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label class="form-field">
+        <span>Nombre de categoría</span>
+        <input formControlName="nombre" placeholder="Ej. Electrónica" maxlength="100" />
+        @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+          <small class="field-error">Ingresa un nombre de hasta 100 caracteres.</small>
+        }
+      </label>
+      <label class="form-field">
+        <span>Descripción <small>(opcional)</small></span>
+        <textarea formControlName="descripcion" placeholder="¿Qué productos incluye?" maxlength="250" rows="3"></textarea>
+        @if (form.controls.descripcion.touched && form.controls.descripcion.invalid) {
+          <small class="field-error">La descripción no puede superar 250 caracteres.</small>
+        }
+      </label>
+      <footer class="dialog-actions">
+        <button type="button" class="button button-secondary" (click)="cancelled.emit()">Cancelar</button>
+        <button type="submit" class="button button-primary">Crear categoría</button>
+      </footer>
+    </form>
+  </section>
+</div>

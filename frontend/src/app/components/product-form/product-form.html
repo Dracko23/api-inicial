@@ -1,0 +1,55 @@
+<div class="modal-backdrop" (click)="cancelled.emit()">
+  <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="product-dialog-title" (click)="$event.stopPropagation()">
+    <header class="dialog-header">
+      <div><span class="dialog-kicker">INVENTARIO</span><h2 id="product-dialog-title">{{ product() ? 'Editar producto' : 'Nuevo producto' }}</h2></div>
+      <button type="button" class="close-button" aria-label="Cerrar" (click)="cancelled.emit()">×</button>
+    </header>
+    <p class="dialog-description">Completa los datos para mantener tu inventario actualizado.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label class="form-field">
+        <span>Nombre del producto</span>
+        <input formControlName="nombre" placeholder="Ej. Audífonos inalámbricos" maxlength="100" />
+        @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+          <small class="field-error">Ingresa un nombre de hasta 100 caracteres.</small>
+        }
+      </label>
+      <div class="form-row">
+        <label class="form-field">
+          <span>Precio (USD)</span>
+          <input type="number" formControlName="precio" min="0" max="99999999.99" step="0.01" />
+          @if (form.controls.precio.touched && form.controls.precio.invalid) {
+            <small class="field-error">El precio debe ser igual o mayor que cero.</small>
+          }
+        </label>
+        <label class="form-field">
+          <span>Unidades en stock</span>
+          <input type="number" formControlName="stock" min="0" step="1" />
+          @if (form.controls.stock.touched && form.controls.stock.invalid) {
+            <small class="field-error">El stock debe ser igual o mayor que cero.</small>
+          }
+        </label>
+      </div>
+      <label class="form-field">
+        <span>Categoría</span>
+        <select formControlName="categoriaId">
+          <option [ngValue]="0" disabled>Selecciona una categoría</option>
+          @for (category of categories(); track category.id) {
+            <option [ngValue]="category.id">{{ category.nombre }}</option>
+          }
+        </select>
+        @if (form.controls.categoriaId.touched && form.controls.categoriaId.invalid) {
+          <small class="field-error">Selecciona una categoría.</small>
+        }
+      </label>
+      <label class="switch-field">
+        <span><strong>Producto activo</strong><small>Disponible en tu inventario</small></span>
+        <input type="checkbox" formControlName="estado" />
+      </label>
+      <footer class="dialog-actions">
+        <button type="button" class="button button-secondary" (click)="cancelled.emit()">Cancelar</button>
+        <button type="submit" class="button button-primary">{{ product() ? 'Guardar cambios' : 'Crear producto' }}</button>
+      </footer>
+    </form>
+  </section>
+</div>

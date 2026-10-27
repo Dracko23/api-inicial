@@ -45,3 +45,14 @@ Las migraciones existentes crean las tablas de categorias y productos. La API us
 | DELETE | `/api/productos/{id}` | Eliminar producto |
 
 Las rutas anteriores `/api/v1/productos` se conservan como alias. Los cuerpos y ejemplos de solicitudes estan en `ApiInicial.http`. En PATCH se pueden enviar `stock: 0` y `estado: false`; los campos omitidos no cambian.
+
+## Aplicacion Angular
+
+La interfaz Angular 22 esta en `../frontend`. Para ejecutarla en desarrollo, inicia primero la API con `dotnet run` y despues, desde la carpeta `frontend`, ejecuta:
+
+```powershell
+npm install
+npm start
+```
+
+Abre `http://localhost:4200`. La interfaz consume la API local en `https://localhost:7080/api`; si el certificado HTTPS de desarrollo no esta confiado, ejecuta `dotnet dev-certs https --trust`. La API permite solicitudes CORS desde `http://localhost:4200` para el desarrollo local.

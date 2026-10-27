@@ -1,0 +1,139 @@
+.modal-backdrop {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(25 24 39 / 38%);
+  backdrop-filter: blur(4px);
+}
+
+.dialog {
+  width: min(100%, 520px);
+  padding: 28px;
+  border: 1px solid #eeedf3;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 24px 80px rgb(34 30 55 / 22%);
+}
+
+.dialog-header,
+.dialog-actions,
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dialog-kicker {
+  color: #8068dc;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+}
+
+.dialog h2 {
+  margin: 5px 0 0;
+  color: #292637;
+  font-size: 23px;
+  letter-spacing: -0.8px;
+}
+
+.dialog-description {
+  margin: 11px 0 23px;
+  color: #898795;
+  font-size: 13px;
+}
+
+.close-button {
+  display: grid;
+  width: 35px;
+  height: 35px;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  background: #f5f4f8;
+  color: #777383;
+  cursor: pointer;
+  font-size: 23px;
+}
+
+.form-field {
+  display: grid;
+  flex: 1;
+  gap: 8px;
+  margin-bottom: 17px;
+  color: #454251;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  height: 43px;
+  padding: 0 12px;
+  border: 1px solid #e6e4ec;
+  border-radius: 9px;
+  outline: 0;
+  background: #fff;
+  color: #383644;
+  font: inherit;
+  font-weight: 400;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: #927be9;
+  box-shadow: 0 0 0 3px rgb(146 123 233 / 12%);
+}
+
+.field-error {
+  color: #d34b60;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.switch-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1px 0 23px;
+}
+
+.switch-field span {
+  display: grid;
+  gap: 4px;
+  color: #454251;
+  font-size: 12px;
+}
+
+.switch-field small {
+  color: #92909d;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.switch-field input {
+  width: 17px;
+  height: 17px;
+  accent-color: #8068dc;
+}
+
+.dialog-actions {
+  justify-content: flex-end;
+  padding-top: 17px;
+  border-top: 1px solid #f0eff4;
+}
+
+@media (max-width: 520px) {
+  .dialog {
+    padding: 22px;
+  }
+
+  .form-row {
+    display: block;
+  }
+}
